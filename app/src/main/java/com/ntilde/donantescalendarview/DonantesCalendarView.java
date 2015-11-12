@@ -14,7 +14,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -112,7 +111,6 @@ public class DonantesCalendarView extends View{
         bundle.putBoolean("mDisplayDaysName", mDisplayDaysName);
         bundle.putBoolean("mDisplayMonthName", mDisplayMonthName);
         bundle.putInt("actualView", actualView);
-        bundle.putSerializable("mOnSelectedDateChangeListener", mOnSelectedDateChangeListener);
         return bundle;
     }
 
@@ -128,7 +126,6 @@ public class DonantesCalendarView extends View{
             mDisplayDaysName = bundle.getBoolean("mDisplayDaysName");
             mDisplayMonthName = bundle.getBoolean("mDisplayMonthName");
             actualView = bundle.getInt("actualView");
-            mOnSelectedDateChangeListener = (OnSelectedDateChangeListener)bundle.getSerializable("mOnSelectedDateChangeListener");
             state = bundle.getParcelable("instanceState");
         }
         super.onRestoreInstanceState(state);
@@ -679,32 +676,9 @@ public class DonantesCalendarView extends View{
         requestLayout();
     }
 
-    /*public Date getSelectedDay() {
-        Date date = new Date();
-        Calendar c= Calendar.getInstance();
-        c.set(Calendar.YEAR, cal.get(Calendar.YEAR));
-        c.set(Calendar.MONTH, cal.get(Calendar.MONTH));
-        c.set(Calendar.DAY_OF_MONTH, mSelectedDay);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        date.setTime(c.getTimeInMillis());
-        return date;
-    }
-
-    public void setSelectedDay(Date selectedDay) {
-        Calendar c=Calendar.getInstance();
-        c.setTime(selectedDay);
-        this.mSelectedDay = c.get(Calendar.DAY_OF_MONTH);
-        invalidate();
-    }*/
-
     public Date getSelectedDate(){
         return mSelectedDate;
     }
-
-
 
     public Map<Long,DonantesCalendarEvent> getEvents(){
         return mEvents;
@@ -725,110 +699,7 @@ public class DonantesCalendarView extends View{
         }
     }
 
-
-    public static class DonantesCalendarEvent{
-
-        private Object mEventInfo;
-        private Date mDate;
-        private int mColor;
-        private Map<Integer, Integer> mRange;
-
-        public DonantesCalendarEvent(Object eventInfo, Date date, int color){
-            mEventInfo = eventInfo;
-            mDate = date;
-            mColor = color;
-        }
-
-        public DonantesCalendarEvent(Object eventInfo, Date date, int color, int... ranges){
-            mEventInfo = eventInfo;
-            mDate = date;
-            mColor = color;
-            mRange=new HashMap<>();
-            for(int i=0;i<ranges.length-ranges.length%2;i+=2){
-                mRange.put(ranges[i], ranges[i + 1]);
-            }
-        }
-
-        public DonantesCalendarEvent(Object eventInfo, int year, int month, int day, int color){
-            mEventInfo = eventInfo;
-            mDate = new Date();
-            Calendar c= Calendar.getInstance();
-            c.set(Calendar.YEAR, year);
-            c.set(Calendar.MONTH, month-1);
-            c.set(Calendar.DAY_OF_MONTH, day);
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            mDate.setTime(c.getTimeInMillis());
-            mColor = color;
-            //SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-            //Log.e("XXX", "Fecha: " + format1.format(mDate));
-        }
-
-        public DonantesCalendarEvent(Object eventInfo, int year, int month, int day, int color, int... ranges){
-            mEventInfo = eventInfo;
-            mDate = new Date();
-            Calendar c= Calendar.getInstance();
-            c.set(Calendar.YEAR, year);
-            c.set(Calendar.MONTH, month-1);
-            c.set(Calendar.DAY_OF_MONTH, day);
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            mDate.setTime(c.getTimeInMillis());
-            mColor = color;
-            //SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-            //Log.e("XXX", "Fecha: " + format1.format(mDate));
-            mRange=new HashMap<>();
-            for(int i=0;i<ranges.length-ranges.length%2;i+=2){
-                mRange.put(ranges[i], ranges[i + 1]);
-                //Log.e("XXX","Rango: color="+ranges[i]+" dias:"+ranges[i+1]);
-            }
-        }
-
-        public Date getDate() {
-            return mDate;
-        }
-
-        public void setDate(Date date) {
-            this.mDate = date;
-        }
-
-        public int getColor() {
-            return mColor;
-        }
-
-        public void setColor(int color) {
-            this.mColor = color;
-        }
-
-        public Map<Integer, Integer> getRanges() {
-            return mRange;
-        }
-
-        public void setRanges(Map<Integer, Integer> ranges) {
-            this.mRange = ranges;
-        }
-
-        public void addRange(Integer color, Integer days){
-            if(mRange ==null){
-                mRange =new HashMap<>();
-            }
-            mRange.put(color, days);
-        }
-
-        public Object getEventInfo() {
-            return mEventInfo;
-        }
-
-        public void setEventInfo(Object eventInfo) {
-            mEventInfo = eventInfo;
-        }
-    }
-
-    public static interface OnSelectedDateChangeListener extends Serializable{
-        public void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event);
+    public interface OnSelectedDateChangeListener{
+        void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event);
     }
 }

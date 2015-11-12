@@ -1,8 +1,8 @@
 package com.ntilde.donantescalendarview;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Date selectedDate = calendar.getSelectedDate();
-                calendar.addEvent(new DonantesCalendarView.DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), Color.rgb(255, 221, 85), 14, Color.rgb(212, 0, 0), 7));
+                calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), Color.rgb(255, 221, 85), 14, Color.rgb(212, 0, 0), 7));
             }
         });
         findViewById(R.id.toggleMonthName).setOnClickListener(new View.OnClickListener() {
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.logEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DonantesCalendarView.DonantesCalendarEvent event = calendar.getSelectedEvent();
+                DonantesCalendarEvent event = calendar.getSelectedEvent();
                 if(event==null){
                     Log.e("XXX", "No hay evento!!");
                 }
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         });
         calendar.setOnSelectedDateChangeListener(new DonantesCalendarView.OnSelectedDateChangeListener() {
             @Override
-            public void OnSelectedDateChange(Date selectedDate, DonantesCalendarView.DonantesCalendarEvent event) {
+            public void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event) {
                 if(event!=null){
                     Log.e("XXX", "Evento: "+event.getEventInfo());
                 }
