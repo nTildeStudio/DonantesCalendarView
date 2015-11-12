@@ -412,13 +412,13 @@ public class DonantesCalendarView extends View{
                         mSelectedDate=cal.getTime();
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
-                        canvas.drawCircle(left + radius, top + radius, (int) (radius * .8), mSelectedDayBoxCircle);
+                        canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mSelectedDayBoxCircle);
                     }
                     else {
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxStroke);
                         if(mPreselectedDay!=-1 && week * 7 + day == mPreselectedDay){
-                            canvas.drawCircle(left + radius, top + radius, (int) (radius * .8), mPreselectedDayBoxCircle);
+                            canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mPreselectedDayBoxCircle);
                         }
                     }
                     drawCenter(canvas, mEnabledDayText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
@@ -580,7 +580,8 @@ public class DonantesCalendarView extends View{
         super.onSizeChanged(w, h, oldw, oldh);
 
         mDayWidth=w/7-mDayBoxStrokeWidth;
-        mDayHeight=mDayWidth;
+        //mDayHeight=mDayWidth;
+        mDayHeight=(h-(mDisplayMonthName?mDayWidth:0)-(mDisplayDaysName?mDayWidth/2:0))/6;
         mMonthWidth=w/4-mDayBoxStrokeWidth;
         mMonthHeight=(h-mDayHeight)/3-mDayBoxStrokeWidth;
     }

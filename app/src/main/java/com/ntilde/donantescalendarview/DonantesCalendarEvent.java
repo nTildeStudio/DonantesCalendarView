@@ -1,8 +1,5 @@
 package com.ntilde.donantescalendarview;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,34 +13,34 @@ public class DonantesCalendarEvent implements Serializable{
     private int mColor;
     private HashMap<Integer, Integer> mRange;
 
-    public static final Parcelable.Creator<DonantesCalendarEvent> CREATOR = new Parcelable.Creator<DonantesCalendarEvent>()
-    {
-        @Override
-        public DonantesCalendarEvent createFromParcel(Parcel source)
-        {
-            return new DonantesCalendarEvent(source);
-        }
+//    public static final Parcelable.Creator<DonantesCalendarEvent> CREATOR = new Parcelable.Creator<DonantesCalendarEvent>()
+//    {
+//        @Override
+//        public DonantesCalendarEvent createFromParcel(Parcel source)
+//        {
+//            return new DonantesCalendarEvent(source);
+//        }
+//
+//        @Override
+//        public DonantesCalendarEvent[] newArray(int size)
+//        {
+//            return new DonantesCalendarEvent[size];
+//        }
+//    };
 
-        @Override
-        public DonantesCalendarEvent[] newArray(int size)
-        {
-            return new DonantesCalendarEvent[size];
-        }
-    };
-
-    public DonantesCalendarEvent(Parcel in){
-        mEventInfo = in.readSerializable();
-        mDate = (Date)in.readSerializable();
-        mColor = in.readInt();
-        mRange = (HashMap<Integer, Integer>)in.readSerializable();
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeSerializable((Serializable)mEventInfo);
-        dest.writeSerializable(mDate);
-        dest.writeInt(mColor);
-        dest.writeSerializable(mRange);
-    }
+//    public DonantesCalendarEvent(Parcel in){
+//        mEventInfo = in.readSerializable();
+//        mDate = (Date)in.readSerializable();
+//        mColor = in.readInt();
+//        mRange = (HashMap<Integer, Integer>)in.readSerializable();
+//    }
+//
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeSerializable((Serializable)mEventInfo);
+//        dest.writeSerializable(mDate);
+//        dest.writeInt(mColor);
+//        dest.writeSerializable(mRange);
+//    }
 
     public DonantesCalendarEvent(Object eventInfo, Date date, int color){
         mEventInfo = eventInfo;
