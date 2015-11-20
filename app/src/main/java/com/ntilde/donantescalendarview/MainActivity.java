@@ -21,7 +21,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Date selectedDate = calendar.getSelectedDate();
-                calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), Color.rgb(255, 221, 85), 14, Color.rgb(212, 0, 0), 7));
+
+                DonantesCalendarRange rangoRojo=new DonantesCalendarRange(1, DonantesCalendarRange.UNITS.MONTHS, Color.rgb(212, 0, 0),"No puedes donar nada");
+                DonantesCalendarRange rangoNaranja=new DonantesCalendarRange(14, DonantesCalendarRange.UNITS.DAYS, Color.rgb(255, 221, 85),"No puedes donar sangre");
+                calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), rangoRojo, rangoNaranja));
+
+                //calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), Color.rgb(255, 221, 85), 14, Color.rgb(212, 0, 0), 7));
             }
         });
         findViewById(R.id.toggleMonthName).setOnClickListener(new View.OnClickListener() {
@@ -50,9 +55,12 @@ public class MainActivity extends AppCompatActivity {
         });
         calendar.setOnSelectedDateChangeListener(new DonantesCalendarView.OnSelectedDateChangeListener() {
             @Override
-            public void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event) {
+            public void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event, DonantesCalendarRange range) {
                 if(event!=null){
                     Log.e("XXX", "Evento: "+event.getEventInfo());
+                }
+                if(range!=null){
+                    Log.e("XXX", "Rango: "+range.getMessage());
                 }
             }
         });
