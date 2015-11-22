@@ -17,16 +17,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         calendar = (DonantesCalendarView) findViewById(R.id.calendar);
+
+//        Calendar enero2016= Calendar.getInstance();
+//        enero2016.set(Calendar.YEAR, 2016);
+//        enero2016.set(Calendar.MONTH, Calendar.JANUARY);
+//        enero2016.set(Calendar.DAY_OF_MONTH, 1);
+//        enero2016.set(Calendar.HOUR_OF_DAY, 0);
+//        enero2016.set(Calendar.MINUTE, 0);
+//        enero2016.set(Calendar.SECOND, 0);
+//        enero2016.set(Calendar.MILLISECOND, 0);
+//        DonantesCalendarRange eventoEnero2016=new DonantesCalendarRange(enero2016.getTime(), 1, DonantesCalendarRange.UNITS.MONTHS, Color.MAGENTA);
+//        calendar.addEvent(new DonantesCalendarEvent("TEST", eventoEnero2016));
+
         findViewById(R.id.addEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Date selectedDate = calendar.getSelectedDate();
-
+                DonantesCalendarRange evento=new DonantesCalendarRange(selectedDate, 1, DonantesCalendarRange.UNITS.DAYS, Color.rgb(0, 128, 0));
                 DonantesCalendarRange rangoRojo=new DonantesCalendarRange(1, DonantesCalendarRange.UNITS.MONTHS, Color.rgb(212, 0, 0),"No puedes donar nada");
                 DonantesCalendarRange rangoNaranja=new DonantesCalendarRange(14, DonantesCalendarRange.UNITS.DAYS, Color.rgb(255, 221, 85),"No puedes donar sangre");
-                calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), rangoRojo, rangoNaranja));
-
-                //calendar.addEvent(new DonantesCalendarEvent("Sangre", selectedDate, Color.rgb(0, 128, 0), Color.rgb(255, 221, 85), 14, Color.rgb(212, 0, 0), 7));
+                calendar.addEvent(new DonantesCalendarEvent("Sangre", evento, rangoRojo, rangoNaranja));
             }
         });
         findViewById(R.id.toggleMonthName).setOnClickListener(new View.OnClickListener() {
