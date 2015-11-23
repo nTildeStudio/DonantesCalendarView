@@ -725,7 +725,7 @@ public class DonantesCalendarView extends View{
                 do{
                     mEvents.put(c1.getTimeInMillis(), event);
                     c1.add(Calendar.DAY_OF_YEAR, 1);
-                }while(c1.getTimeInMillis()<=c2.getTimeInMillis());
+                }while(c1.getTimeInMillis()<c2.getTimeInMillis());
             }
             initEventsAssociated();
         }
