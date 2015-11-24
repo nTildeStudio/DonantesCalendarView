@@ -17,20 +17,21 @@
         app:displayMonthName="true"
         app:displayDaysName="true"
         app:highlightToday="true"
-        app:firstDayOfWeek="monday"/>
+        app:firstDayOfWeek="monday"
+        app:multitouch="true"/>
 
     <Button
         android:id="@+id/addEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AddEvent"
+        android:text="Add"
         android:layout_below="@id/calendar"/>
 
     <Button
         android:id="@+id/toggleMonthName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToggleMonthNames"
+        android:text="Month"
         android:layout_toRightOf="@id/addEvent"
         android:layout_alignTop="@id/addEvent"/>
 
@@ -38,7 +39,7 @@
         android:id="@+id/toggleDaysName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToggleDaysNames"
+        android:text="Days"
         android:layout_toRightOf="@id/toggleMonthName"
         android:layout_alignTop="@id/toggleMonthName"/>
 
@@ -46,8 +47,17 @@
         android:id="@+id/logEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LogEvent"
+        android:text="Log"
         android:layout_toRightOf="@id/toggleDaysName"
         android:layout_alignTop="@id/toggleDaysName"/>
+
+    <Button
+        android:id="@+id/multi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Multi"
+        android:layout_below="@+id/addEvent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

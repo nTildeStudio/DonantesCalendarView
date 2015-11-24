@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 DonantesCalendarRange evento=new DonantesCalendarRange(selectedDate, 1, DonantesCalendarRange.UNITS.DAYS, Color.rgb(0, 128, 0));
                 DonantesCalendarRange rangoRojo=new DonantesCalendarRange(1, DonantesCalendarRange.UNITS.MONTHS, Color.rgb(212, 0, 0),"No puedes donar nada");
                 DonantesCalendarRange rangoNaranja=new DonantesCalendarRange(14, DonantesCalendarRange.UNITS.DAYS, Color.rgb(255, 221, 85),"No puedes donar sangre");
-                calendar.addEvent(new DonantesCalendarEvent("Sangre", evento, rangoRojo, rangoNaranja));
+                calendar.addEvent(new DonantesCalendarEvent("Sangre", evento));
             }
         });
         findViewById(R.id.toggleMonthName).setOnClickListener(new View.OnClickListener() {
@@ -65,13 +67,37 @@ public class MainActivity extends AppCompatActivity {
         });
         calendar.setOnSelectedDateChangeListener(new DonantesCalendarView.OnSelectedDateChangeListener() {
             @Override
-            public void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event, DonantesCalendarRange range) {
-                if(event!=null){
-                    Log.e("XXX", "Evento: "+event.getEventInfo());
+            public void OnSelectedDateChange(Date selectedDateStart, Date selectedDateEnd, List<DonantesCalendarEvent> events, List<DonantesCalendarRange> ranges) {
+                SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy");
+                if(selectedDateStart==null){
+                    Log.e("XXX", "Nada seleccionado");
                 }
-                if(range!=null){
-                    Log.e("XXX", "Rango: "+range.getMessage());
+                else if(selectedDateStart.getTime()==selectedDateEnd.getTime()){
+                    Log.e("XXX", "Seleccionado un dia: "+format1.format(selectedDateStart));
                 }
+                else{
+                    Log.e("XXX", "Seleccionado un rango: "+format1.format(selectedDateStart)+" - "+format1.format(selectedDateEnd));
+                }
+                if(events!=null){
+                    for(DonantesCalendarEvent event:events) {
+                        if(event!=null) {
+                            Log.e("XXX", "Evento: " + event.getEventInfo());
+                        }
+                    }
+                }
+                if(ranges!=null){
+                    for(DonantesCalendarRange range:ranges) {
+                        if(range!=null) {
+                            Log.e("XXX", "Rango: " + range.getMessage());
+                        }
+                    }
+                }
+            }
+        });
+        findViewById(R.id.multi).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendar.setMultitouch(!calendar.isMultitouch());
             }
         });
     }

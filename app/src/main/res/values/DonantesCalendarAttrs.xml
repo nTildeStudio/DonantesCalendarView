@@ -20,5 +20,6 @@
             <enum name="saturday" value="6" />
             <enum name="sunday" value="7" />
         </attr>
+        <attr name="multitouch" format="boolean" />
     </declare-styleable>
 </resources>

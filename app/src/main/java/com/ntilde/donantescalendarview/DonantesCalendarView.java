@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -40,7 +42,7 @@ public class DonantesCalendarView extends View{
     private Calendar cal, calDaysName;
     private int mWeekCount;
     private int mActualMonth;
-    String mMonthName, mYearName;
+    private String mMonthName, mYearName;
 
     private GestureDetector mDetector = new GestureDetector(DonantesCalendarView.this.getContext(), new mListener());
 
@@ -69,11 +71,22 @@ public class DonantesCalendarView extends View{
     private int mDayHeight, mMonthHeight;
 
     private int mSelectedDay=-1;
+    private int mSelectedDayMulti1=-1;
+    private int mSelectedDayMulti2=-1;
     private Date mSelectedDate=null;
+    private Date mSelectedDateMulti1=null;
+    private Date mSelectedDateMulti2=null;
     private int mPreselectedDay=-1;
+    private int mPreselectedDayMulti1=-1;
+    private int mPreselectedDayMulti2=-1;
     private boolean mPreselectedTitle =false;
     private boolean mPreselectedLeft=false;
     private boolean mPreselectedRight=false;
+
+    private long multiuptime;
+    private int multiuptemp2;
+    private static final long multiupdifftime=1000;
+    private boolean multiEnabled=false;
 
     public DonantesCalendarView(Context context) {
         super(context);
@@ -91,6 +104,7 @@ public class DonantesCalendarView extends View{
             mDisplayMonthName = a.getBoolean(R.styleable.DonantesCalendarView_displayMonthName, true);
             mDisplayDaysName = a.getBoolean(R.styleable.DonantesCalendarView_displayDaysName, true);
             mFirstDayOfWeekReaded = a.getInt(R.styleable.DonantesCalendarView_firstDayOfWeek, 1);
+            multiEnabled = a.getBoolean(R.styleable.DonantesCalendarView_multitouch, false);
             mDayBoxStrokeWidth=1;
         }
         finally {
@@ -108,7 +122,11 @@ public class DonantesCalendarView extends View{
         bundle.putSerializable("mEventAssociated", mEventAssociated);
         bundle.putSerializable("cal", cal);
         bundle.putInt("mSelectedDay", mSelectedDay);
+        bundle.putInt("mSelectedDayMulti1", mSelectedDayMulti1);
+        bundle.putInt("mSelectedDayMulti2", mSelectedDayMulti2);
         bundle.putSerializable("mSelectedDate", mSelectedDate);
+        bundle.putSerializable("mSelectedDateMulti1", mSelectedDateMulti1);
+        bundle.putSerializable("mSelectedDateMulti2", mSelectedDateMulti2);
         bundle.putBoolean("mDisplayDaysName", mDisplayDaysName);
         bundle.putBoolean("mDisplayMonthName", mDisplayMonthName);
         bundle.putInt("actualView", actualView);
@@ -123,7 +141,11 @@ public class DonantesCalendarView extends View{
             mEventAssociated = (HashMap<Long, DonantesCalendarRange>)bundle.getSerializable("mEventAssociated");
             cal = (Calendar)bundle.getSerializable("cal");
             mSelectedDay = bundle.getInt("mSelectedDay");
+            mSelectedDayMulti1 = bundle.getInt("mSelectedDayMulti1");
+            mSelectedDayMulti2 = bundle.getInt("mSelectedDayMulti2");
             mSelectedDate = (Date) bundle.getSerializable("mSelectedDate");
+            mSelectedDateMulti1 = (Date) bundle.getSerializable("mSelectedDateMulti1");
+            mSelectedDateMulti2 = (Date) bundle.getSerializable("mSelectedDateMulti2");
             mDisplayDaysName = bundle.getBoolean("mDisplayDaysName");
             mDisplayMonthName = bundle.getBoolean("mDisplayMonthName");
             actualView = bundle.getInt("actualView");
@@ -409,8 +431,11 @@ public class DonantesCalendarView extends View{
         }
 
         int radius = Math.min(mDayWidth,mDayHeight) / 2;
+        int margin=radius-(int)(radius*.8);
         mEnabledDayText.setTextSize(Math.min(mDayWidth,mDayHeight)/2.8f);
         mBlankDays=0;
+        boolean multiPre=false;
+        boolean multiSel=false;
         for(int week=0;week<=mWeekCount;week++){
             left=0;
             right=mDayWidth;
@@ -421,13 +446,80 @@ public class DonantesCalendarView extends View{
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
                         canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mSelectedDayBoxCircle);
+                        if(mSelectedDay>mPreselectedDayMulti1 && mSelectedDay<mPreselectedDayMulti2){
+                            canvas.drawRect(left, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        else if(mSelectedDay==mPreselectedDayMulti1&&mSelectedDay!=mPreselectedDayMulti2){
+                            canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        else if(mSelectedDay!=mPreselectedDayMulti1&&mSelectedDay==mPreselectedDayMulti2){
+                            canvas.drawRect(left, top+margin, right-mDayWidth/2, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        if (mPreselectedDayMulti1 != -1 && week * 7 + day == mPreselectedDayMulti1) {
+                            mSelectedDateMulti1 = cal.getTime();
+                            multiPre = true;
+                        }
+                        else if (mPreselectedDayMulti2 != -1 && week * 7 + day == mPreselectedDayMulti2) {
+                            mSelectedDateMulti2 = cal.getTime();
+                            multiPre = false;
+                        }
                     }
-                    else {
+                    else if (!multiSel) {
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxStroke);
-                        if(mPreselectedDay!=-1 && week * 7 + day == mPreselectedDay){
-                            canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mPreselectedDayBoxCircle);
+                        if (mPreselectedDay != -1 && week * 7 + day == mPreselectedDay) {
+                            canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
                         }
+                        if (mPreselectedDayMulti1 != -1 && week * 7 + day == mPreselectedDayMulti1) {
+                            canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mPreselectedDayBoxCircle);
+                            canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
+                            multiPre = true;
+                        }
+                        else if (mPreselectedDayMulti2 != -1 && week * 7 + day == mPreselectedDayMulti2) {
+                            canvas.drawRect(left, top+margin, right-mDayWidth/2, bottom-margin, mPreselectedDayBoxCircle);
+                            canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
+                            multiPre = false;
+                        }
+                        else if (multiPre) {
+                            canvas.drawRect(left, top+margin, right, bottom-margin, mPreselectedDayBoxCircle);
+                        }
+                    }
+                    if(multiSel){
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
+                        canvas.drawRect(left, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        if (mPreselectedDayMulti1 != -1 && week * 7 + day == mPreselectedDayMulti1) {
+                            multiPre = true;
+                        }
+                        else if (mPreselectedDayMulti2 != -1 && week * 7 + day == mPreselectedDayMulti2) {
+                            multiPre = false;
+                        }
+                    }
+                    if(mSelectedDayMulti1 != -1 && week * 7 + day == mSelectedDayMulti1){
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
+                        canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        if(mSelectedDayMulti1==mPreselectedDayMulti2){
+                            canvas.drawRect(left, top+margin, right-mDayWidth/2, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        else if(mSelectedDayMulti1>mPreselectedDayMulti1 && mSelectedDayMulti1<mPreselectedDayMulti2){
+                            canvas.drawRect(left, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mSelectedDayBoxCircle);
+                        multiSel=true;
+                    }
+                    if(mSelectedDayMulti2 != -1 && week * 7 + day == mSelectedDayMulti2){
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
+                        canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
+                        canvas.drawRect(left, top+margin, right-mDayWidth/2, bottom-margin, mSelectedDayBoxCircle);
+                        if(mSelectedDayMulti2==mPreselectedDayMulti1){
+                            canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        else if(mSelectedDayMulti2>mPreselectedDayMulti1 && mSelectedDayMulti2<mPreselectedDayMulti2){
+                            canvas.drawRect(left, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
+                        }
+                        canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mSelectedDayBoxCircle);
+                        multiSel=false;
                     }
                     drawCenter(canvas, mEnabledDayText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
                     if(mEvents.keySet().contains(cal.getTimeInMillis())){
@@ -459,51 +551,142 @@ public class DonantesCalendarView extends View{
         if (!result){
             if(actualView==MONTH_VIEW) {
                 mSelectedDate=null;
+                mSelectedDateMulti1=null;
+                mSelectedDateMulti2=null;
+                if(multiEnabled && event.getActionMasked() == MotionEvent.ACTION_POINTER_UP){
+                    if(event.getPointerCount()==2) {
+                        MotionEvent.PointerCoords point2 = new MotionEvent.PointerCoords();
+                        event.getPointerCoords(event.getActionIndex(), point2);
+                        multiuptime = System.currentTimeMillis();
+                        multiuptemp2 = touchedDay(point2.x, point2.y);
+                    }
+                }
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    int selectedDay = touchedDay(event.getX(), event.getY());
-                    if (selectedDay != -1) {
-                        mSelectedDay = mSelectedDay == selectedDay ? -1 : selectedDay;
-                        if(mSelectedDay!=-1){
-                            if(mOnSelectedDateChangeListener!=null) {
-                                Calendar calClone=(Calendar)cal.clone();
-                                calClone.set(Calendar.DAY_OF_MONTH, mSelectedDay - mBlankDays + 1);
+                    if(multiEnabled && multiuptemp2!=-1 && System.currentTimeMillis()-multiuptime<=multiupdifftime){
+                        int selectedDay1=touchedDay(event.getX(), event.getY());
+                        int selectedDay2=multiuptemp2;
+                        if(selectedDay1!=-1&&selectedDay2!=-1) {
+                            mSelectedDayMulti1=Math.min(selectedDay1, selectedDay2);
+                            mSelectedDayMulti2=Math.max(selectedDay1, selectedDay2);
+                            mSelectedDay = -1;
+                        }
+                        else{
+                            mSelectedDayMulti1=-1;
+                            mSelectedDayMulti2=-1;
+                        }
+                        mPreselectedDayMulti1 = -1;
+                        mPreselectedDayMulti2 = -2;
+                        mPreselectedTitle = false;
+                        mPreselectedLeft = false;
+                        mPreselectedRight = false;
+
+                        if(mSelectedDayMulti1!=-1&&mSelectedDayMulti2!=-1){
+                            if (mOnSelectedDateChangeListener != null) {
+                                Calendar c1 = (Calendar) cal.clone();
+                                c1.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti1 - mBlankDays + 1);
+                                Calendar ci = (Calendar) cal.clone();
+                                ci.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti1 - mBlankDays + 1);
+                                Calendar c2 = (Calendar) cal.clone();
+                                c2.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti2 - mBlankDays + 1);
+                                ArrayList<DonantesCalendarEvent> events = new ArrayList<>();
+                                ArrayList<DonantesCalendarRange> ranges = new ArrayList<>();
+                                do{
+                                    events.add(getEvent(ci.getTime()));
+                                    ranges.add(mEventAssociated.get(ci.getTimeInMillis()));
+                                    ci.add(Calendar.DAY_OF_YEAR, 1);
+                                }while(ci.getTimeInMillis()<c2.getTimeInMillis());
                                 mOnSelectedDateChangeListener.OnSelectedDateChange(
-                                        calClone.getTime(),
-                                        getEvent(calClone.getTime()),
-                                        mEventAssociated.get(calClone.getTimeInMillis())
+                                        c1.getTime(),
+                                        c2.getTime(),
+                                        events,
+                                        ranges
                                 );
                             }
                         }
-                        else{
-                            if(mOnSelectedDateChangeListener!=null){
-                                mOnSelectedDateChangeListener.OnSelectedDateChange(null, null, null);
-                            }
-                        }
-                    } else if (touchedTitle(event.getX(), event.getY())) {
-                        actualView = YEAR_VIEW;
-                        init(false);
-                    } else if (touchedLeft(event.getX(), event.getY())) {
-                        cal.add(Calendar.MONTH, -1);
-                        mSelectedDay = -1;
-                        mSelectedDate = null;
-                        init(false);
-                    } else if (touchedRight(event.getX(), event.getY())) {
-                        cal.add(Calendar.MONTH, 1);
-                        mSelectedDay = -1;
-                        mSelectedDate = null;
-                        init(false);
                     }
-                    mPreselectedDay = -1;
-                    mPreselectedTitle = false;
-                    mPreselectedLeft = false;
-                    mPreselectedRight = false;
+                    else {
+                        int selectedDay = touchedDay(event.getX(), event.getY());
+                        if (selectedDay != -1) {
+                            mSelectedDay = mSelectedDay == selectedDay ? -1 : selectedDay;
+                            if (mSelectedDay != -1) {
+                                if (mOnSelectedDateChangeListener != null) {
+                                    Calendar calClone = (Calendar) cal.clone();
+                                    calClone.set(Calendar.DAY_OF_MONTH, mSelectedDay - mBlankDays + 1);
+                                    ArrayList<DonantesCalendarEvent> events = new ArrayList<>();
+                                    events.add(getEvent(calClone.getTime()));
+                                    ArrayList<DonantesCalendarRange> ranges = new ArrayList<>();
+                                    ranges.add(mEventAssociated.get(calClone.getTimeInMillis()));
+                                    mOnSelectedDateChangeListener.OnSelectedDateChange(
+                                            calClone.getTime(),
+                                            calClone.getTime(),
+                                            events,
+                                            ranges
+                                    );
+                                }
+                            } else {
+                                if (mOnSelectedDateChangeListener != null) {
+                                    mOnSelectedDateChangeListener.OnSelectedDateChange(null, null, null, null);
+                                }
+                            }
+                        } else if (touchedTitle(event.getX(), event.getY())) {
+                            actualView = YEAR_VIEW;
+                            init(false);
+                        } else if (touchedLeft(event.getX(), event.getY())) {
+                            cal.add(Calendar.MONTH, -1);
+                            mSelectedDay = -1;
+                            mSelectedDate = null;
+                            mSelectedDateMulti1 = null;
+                            mSelectedDateMulti2 = null;
+                            init(false);
+                        } else if (touchedRight(event.getX(), event.getY())) {
+                            cal.add(Calendar.MONTH, 1);
+                            mSelectedDay = -1;
+                            mSelectedDate = null;
+                            mSelectedDateMulti1 = null;
+                            mSelectedDateMulti2 = null;
+                            init(false);
+                        }
+                        mPreselectedDay = -1;
+                        mPreselectedDayMulti1 = -1;
+                        mPreselectedDayMulti2 = -2;
+                        mPreselectedTitle = false;
+                        mPreselectedLeft = false;
+                        mPreselectedRight = false;
+                        mSelectedDayMulti1 = -1;
+                        mSelectedDayMulti2 = -2;
+                    }
+                    multiuptime=-1;
+                    multiuptemp2 = -1;
                     invalidate();
                     result = true;
                 } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    mPreselectedDay = touchedDay(event.getX(), event.getY());
-                    mPreselectedTitle = touchedTitle(event.getX(), event.getY());
-                    mPreselectedLeft = touchedLeft(event.getX(), event.getY());
-                    mPreselectedRight = touchedRight(event.getX(), event.getY());
+                    if(multiEnabled && event.getPointerCount()==2){
+                        MotionEvent.PointerCoords point1=new MotionEvent.PointerCoords(), point2=new MotionEvent.PointerCoords();
+                        event.getPointerCoords(0, point1);
+                        event.getPointerCoords(1, point2);
+                        int selectedDay1=touchedDay(point1.x, point1.y);
+                        int selectedDay2=touchedDay(point2.x, point2.y);
+                        if(selectedDay1!=-1&&selectedDay2!=-1) {
+                            mPreselectedDayMulti1=Math.min(selectedDay1, selectedDay2);
+                            mPreselectedDayMulti2=Math.max(selectedDay1, selectedDay2);
+                        }
+                        else{
+                            mPreselectedDayMulti1=-1;
+                            mPreselectedDayMulti2=-1;
+                        }
+                        mPreselectedDay = -1;
+                        mPreselectedTitle = false;
+                        mPreselectedLeft = false;
+                        mPreselectedRight = false;
+                    }
+                    else {
+                        mPreselectedDay = touchedDay(event.getX(), event.getY());
+                        mPreselectedDayMulti1=-1;
+                        mPreselectedDayMulti2=-1;
+                        mPreselectedTitle = touchedTitle(event.getX(), event.getY());
+                        mPreselectedLeft = touchedLeft(event.getX(), event.getY());
+                        mPreselectedRight = touchedRight(event.getX(), event.getY());
+                    }
                     invalidate();
                 }
             }
@@ -515,6 +698,8 @@ public class DonantesCalendarView extends View{
                         actualView=MONTH_VIEW;
                         mSelectedDay=-1;
                         mSelectedDate=null;
+                        mSelectedDateMulti1 = null;
+                        mSelectedDateMulti2 = null;
                         init(false);
                     } else if (touchedTitle(event.getX(), event.getY())) {
 
@@ -641,6 +826,14 @@ public class DonantesCalendarView extends View{
 
     //GETTERS AND SETTERS
 
+    public void setMultitouch(boolean multitouch){
+        multiEnabled = multitouch;
+    }
+
+    public boolean isMultitouch(){
+        return multiEnabled;
+    }
+
     public void setOnSelectedDateChangeListener(OnSelectedDateChangeListener onSelectedDateChangeListener){
         mOnSelectedDateChangeListener = onSelectedDateChangeListener;
     }
@@ -732,6 +925,6 @@ public class DonantesCalendarView extends View{
     }
 
     public interface OnSelectedDateChangeListener{
-        void OnSelectedDateChange(Date selectedDate, DonantesCalendarEvent event, DonantesCalendarRange range);
+        void OnSelectedDateChange(Date selectedDateStart, Date selectedDateEnd, List<DonantesCalendarEvent> events, List<DonantesCalendarRange> ranges);
     }
 }
