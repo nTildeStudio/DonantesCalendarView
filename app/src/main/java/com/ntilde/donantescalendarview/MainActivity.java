@@ -34,11 +34,20 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.addEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Date selectedDate = calendar.getSelectedDate();
-                DonantesCalendarRange evento=new DonantesCalendarRange(selectedDate, 1, DonantesCalendarRange.UNITS.DAYS, Color.rgb(0, 128, 0));
-                DonantesCalendarRange rangoRojo=new DonantesCalendarRange(1, DonantesCalendarRange.UNITS.MONTHS, Color.rgb(212, 0, 0),"No puedes donar nada");
-                DonantesCalendarRange rangoNaranja=new DonantesCalendarRange(14, DonantesCalendarRange.UNITS.DAYS, Color.rgb(255, 221, 85),"No puedes donar sangre");
-                calendar.addEvent(new DonantesCalendarEvent("Sangre", evento));
+                if(calendar.isSelectedDate()) {
+                    Date selectedDate = calendar.getSelectedDate();
+                    DonantesCalendarRange evento = new DonantesCalendarRange(selectedDate, 1, DonantesCalendarRange.UNITS.DAYS, Color.rgb(0, 128, 0));
+                    DonantesCalendarRange rangoRojo = new DonantesCalendarRange(14, DonantesCalendarRange.UNITS.DAYS, Color.rgb(212, 0, 0), "No puedes donar nada");
+                    DonantesCalendarRange rangoNaranja = new DonantesCalendarRange(1, DonantesCalendarRange.UNITS.MONTHS, Color.rgb(255, 221, 85), "No puedes donar sangre");
+                    calendar.addEvent(new DonantesCalendarEvent("Sangre", evento, rangoNaranja, rangoRojo));
+                }
+                else if(calendar.isSelectedRange()){
+                    Date[] selectedRange = calendar.getSelectedRange();
+                    int days = (int)(Math.abs(selectedRange[0].getTime()-selectedRange[1].getTime())/(24*60*60*1000))+1;
+                    Log.e("XXX", "Dias: "+days);
+                    DonantesCalendarRange evento = new DonantesCalendarRange(selectedRange[0], days, DonantesCalendarRange.UNITS.DAYS, Color.rgb(0, 128, 0));
+                    calendar.addEvent(new DonantesCalendarEvent("Sangre", evento));
+                }
             }
         });
         findViewById(R.id.toggleMonthName).setOnClickListener(new View.OnClickListener() {

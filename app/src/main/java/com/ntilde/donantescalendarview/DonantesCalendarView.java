@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -834,6 +833,14 @@ public class DonantesCalendarView extends View{
         return multiEnabled;
     }
 
+    public boolean isSelectedDate(){
+        return mSelectedDay!=-1;
+    }
+
+    public boolean isSelectedRange(){
+        return mSelectedDayMulti1!=-1&&mSelectedDayMulti2!=-1;
+    }
+
     public void setOnSelectedDateChangeListener(OnSelectedDateChangeListener onSelectedDateChangeListener){
         mOnSelectedDateChangeListener = onSelectedDateChangeListener;
     }
@@ -888,6 +895,14 @@ public class DonantesCalendarView extends View{
 
     public Date getSelectedDate(){
         return mSelectedDate;
+    }
+
+    public Date[] getSelectedRange(){
+        Calendar c1 = (Calendar) cal.clone();
+        c1.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti1 - mBlankDays + 1);
+        Calendar c2 = (Calendar) cal.clone();
+        c2.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti2 - mBlankDays + 1);
+        return new Date[]{c1.getTime(), c2.getTime()};
     }
 
     public Map<Long,DonantesCalendarEvent> getEvents(){
