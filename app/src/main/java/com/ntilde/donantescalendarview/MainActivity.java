@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -65,12 +69,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.logEvent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DonantesCalendarEvent event = calendar.getSelectedEvent();
-                if(event==null){
+                List<DonantesCalendarEvent> events = calendar.getSelectedEvent();
+                if(events==null||events.size()==0){
                     Log.e("XXX", "No hay evento!!");
                 }
                 else{
-                    Log.e("XXX", "Evento: "+event.getEventInfo());
+                    for(DonantesCalendarEvent event:events) {
+                        Log.e("XXX", "Evento: " + event.getEventInfo());
+                    }
                 }
             }
         });
@@ -108,6 +114,85 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 calendar.setMultitouch(!calendar.isMultitouch());
             }
+        });
+        findViewById(R.id.weekends).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendar.setHighlightWeekend(!calendar.isHighlightWeekend());
+            }
+        });
+
+        ((Spinner)findViewById(R.id.firstDay)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(view!=null) {
+                    switch (((TextView) view).getText().toString()) {
+                        case "Monday":calendar.setFirstDayOfWeek(Calendar.MONDAY);break;
+                        case "Tuesday":calendar.setFirstDayOfWeek(Calendar.TUESDAY);break;
+                        case "Wednesday":calendar.setFirstDayOfWeek(Calendar.WEDNESDAY);break;
+                        case "Thursday":calendar.setFirstDayOfWeek(Calendar.THURSDAY);break;
+                        case "Friday":calendar.setFirstDayOfWeek(Calendar.FRIDAY);break;
+                        case "Saturday":calendar.setFirstDayOfWeek(Calendar.SATURDAY);break;
+                        case "Sunday":calendar.setFirstDayOfWeek(Calendar.SUNDAY);break;
+                    }
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        ((Spinner)findViewById(R.id.theme)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(view!=null){
+                    switch (((TextView) view).getText().toString()) {
+                        case "White":
+                            calendar.setBackgroundColor(Color.WHITE);
+                            calendar.setMonthTextColor(Color.BLACK);
+                            calendar.setMonthSelectedTextColor(Color.GRAY);
+                            calendar.setDayNameTextColor(Color.GRAY);
+                            calendar.setDayBoxBackgroundColor(Color.rgb(230,230,230));
+                            calendar.setDaySelectedBoxBackgroundColor(Color.rgb(230,230,230));
+                            calendar.setDayTextColor(Color.BLACK);
+                            calendar.setDayWeekendTextColor(Color.GRAY);
+                            calendar.setDayBoxBorderColor(Color.WHITE);
+                            calendar.setDaySelectedCircleBackgroundColor(Color.WHITE);
+                            calendar.setDayPreselectedCircleBackgroundColor(Color.rgb(245, 245, 245));
+                            calendar.setDaySelectedTextColor(Color.BLACK);
+                            break;
+                        case "Black":
+                            calendar.setBackgroundColor(Color.rgb(66,66,66));
+                            calendar.setMonthTextColor(Color.WHITE);
+                            calendar.setMonthSelectedTextColor(Color.LTGRAY);
+                            calendar.setDayNameTextColor(Color.LTGRAY);
+                            calendar.setDayBoxBackgroundColor(Color.rgb(44,44,44));
+                            calendar.setDaySelectedBoxBackgroundColor(Color.rgb(44,44,44));
+                            calendar.setDayTextColor(Color.WHITE);
+                            calendar.setDayWeekendTextColor(Color.GRAY);
+                            calendar.setDayBoxBorderColor(Color.LTGRAY);
+                            calendar.setDaySelectedCircleBackgroundColor(Color.rgb(225, 225, 225));
+                            calendar.setDayPreselectedCircleBackgroundColor(Color.rgb(205, 205, 205));
+                            calendar.setDaySelectedTextColor(Color.BLACK);
+                            break;
+                        case "Red":
+                            calendar.setBackgroundColor(Color.WHITE);
+                            calendar.setMonthTextColor(Color.rgb(200,0,0));
+                            calendar.setMonthSelectedTextColor(Color.rgb(250,50,50));
+                            calendar.setDayNameTextColor(Color.rgb(200,0,0));
+                            calendar.setDayBoxBackgroundColor(Color.rgb(255,0,0));
+                            calendar.setDaySelectedBoxBackgroundColor(Color.rgb(255,0,0));
+                            calendar.setDayTextColor(Color.WHITE);
+                            calendar.setDayWeekendTextColor(Color.LTGRAY);
+                            calendar.setDayBoxBorderColor(Color.WHITE);
+                            calendar.setDaySelectedCircleBackgroundColor(Color.WHITE);
+                            calendar.setDayPreselectedCircleBackgroundColor(Color.rgb(245, 245, 245));
+                            calendar.setDaySelectedTextColor(Color.RED);
+                            break;
+                    }
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
     }
 }

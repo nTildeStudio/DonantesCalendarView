@@ -56,6 +56,8 @@ public class DonantesCalendarView extends View{
     private Paint mSelectedMonthText;
     private Paint mDaysNameText;
     private Paint mEnabledDayText;
+    private Paint mEnabledSelectedDayText;
+    private Paint mEnabledDayWeekendText;
     private Paint mEnabledDayBoxFill;
     private Paint mEnabledDayBoxStroke;
     private Paint mSelectedDayBoxFill;
@@ -63,6 +65,21 @@ public class DonantesCalendarView extends View{
     private Paint mSelectedDayBoxCircle;
     private Paint mPreselectedDayBoxCircle;
     private Paint mEventBoxFill;
+
+    private int mBackgroundColor;
+    private int mMonthTextColor;
+    private int mMonthSelectedTextColor;
+    private int mDayNameTextColor;
+    private int mDayBoxBackgroundColor;
+    private int mDayTextColor;
+    private int mDayWeekendTextColor;
+    private int mDayBoxBorderColor;
+    private int mDaySelectedBoxBackgroundColor;
+    private int mDaySelectedCircleBackgroundColor;
+    private int mDayPreselectedCircleBackgroundColor;
+    private int mDaySelectedTextColor;
+
+    private boolean mHighlightWeekend;
 
     private Path triangleLeft, triangleRight;
 
@@ -105,6 +122,21 @@ public class DonantesCalendarView extends View{
             mFirstDayOfWeekReaded = a.getInt(R.styleable.DonantesCalendarView_firstDayOfWeek, 1);
             multiEnabled = a.getBoolean(R.styleable.DonantesCalendarView_multitouch, false);
             mDayBoxStrokeWidth=1;
+
+            mBackgroundColor = a.getColor(R.styleable.DonantesCalendarView_backgroundColor, Color.WHITE);
+            mMonthTextColor = a.getColor(R.styleable.DonantesCalendarView_monthTextColor, Color.BLACK);
+            mDayNameTextColor = a.getColor(R.styleable.DonantesCalendarView_dayNameTextColor, Color.GRAY);
+            mMonthSelectedTextColor = a.getColor(R.styleable.DonantesCalendarView_monthSelectedTextColor, mDayNameTextColor);
+            mDayBoxBackgroundColor = a.getColor(R.styleable.DonantesCalendarView_dayBoxBackgroundColor, Color.rgb(230,230,230));
+            mDayTextColor = a.getColor(R.styleable.DonantesCalendarView_dayTextColor, Color.BLACK);
+            mDayWeekendTextColor = a.getColor(R.styleable.DonantesCalendarView_dayWeekendTextColor, mDayTextColor);
+            mDayBoxBorderColor = a.getColor(R.styleable.DonantesCalendarView_dayBoxBorderColor, Color.WHITE);
+            mDaySelectedBoxBackgroundColor = a.getColor(R.styleable.DonantesCalendarView_daySelectedBoxBackgroundColor, Color.rgb(230, 230, 230));
+            mDaySelectedCircleBackgroundColor = a.getColor(R.styleable.DonantesCalendarView_daySelectedCircleBackgroundColor, Color.WHITE);
+            mDayPreselectedCircleBackgroundColor = a.getColor(R.styleable.DonantesCalendarView_dayPreselectedCircleBackgroundColor, Color.rgb(245, 245, 245));
+            mDaySelectedTextColor = a.getColor(R.styleable.DonantesCalendarView_daySelectedTextColor, mDayTextColor);
+
+            mHighlightWeekend = a.getBoolean(R.styleable.DonantesCalendarView_highlightWeekend, true);
         }
         finally {
             a.recycle();
@@ -184,32 +216,38 @@ public class DonantesCalendarView extends View{
 
             mBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
             mBackground.setStyle(Paint.Style.FILL);
-            mBackground.setColor(Color.WHITE);
+            mBackground.setColor(mBackgroundColor);
 
             mMonthText = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mMonthText.setColor(Color.BLACK);
+            mMonthText.setColor(mMonthTextColor);
 
             mSelectedMonthText = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mSelectedMonthText.setColor(Color.GRAY);
+            mSelectedMonthText.setColor(mMonthSelectedTextColor);
 
             mDaysNameText = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mDaysNameText.setColor(Color.GRAY);
+            mDaysNameText.setColor(mDayNameTextColor);
 
             mEnabledDayText = new Paint(Paint.ANTI_ALIAS_FLAG);
-            mEnabledDayText.setColor(Color.BLACK);
+            mEnabledDayText.setColor(mDayTextColor);
+
+            mEnabledSelectedDayText = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mEnabledSelectedDayText.setColor(mDaySelectedTextColor);
+
+            mEnabledDayWeekendText = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mEnabledDayWeekendText.setColor(mDayWeekendTextColor);
 
             mEnabledDayBoxFill = new Paint(Paint.ANTI_ALIAS_FLAG);
             mEnabledDayBoxFill.setStyle(Paint.Style.FILL);
-            mEnabledDayBoxFill.setColor(Color.rgb(230,230,230));
+            mEnabledDayBoxFill.setColor(mDayBoxBackgroundColor);
 
             mEnabledDayBoxStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
             mEnabledDayBoxStroke.setStyle(Paint.Style.STROKE);
-            mEnabledDayBoxStroke.setColor(Color.WHITE);
+            mEnabledDayBoxStroke.setColor(mDayBoxBorderColor);
             mEnabledDayBoxStroke.setStrokeWidth(mDayBoxStrokeWidth);
 
             mSelectedDayBoxFill = new Paint(Paint.ANTI_ALIAS_FLAG);
             mSelectedDayBoxFill.setStyle(Paint.Style.FILL);
-            mSelectedDayBoxFill.setColor(Color.rgb(230, 230, 230));
+            mSelectedDayBoxFill.setColor(mDaySelectedBoxBackgroundColor);
 
             mSelectedDayBoxStroke = new Paint(Paint.ANTI_ALIAS_FLAG);
             mSelectedDayBoxStroke.setStyle(Paint.Style.STROKE);
@@ -218,11 +256,11 @@ public class DonantesCalendarView extends View{
 
             mSelectedDayBoxCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
             mSelectedDayBoxCircle.setStyle(Paint.Style.FILL);
-            mSelectedDayBoxCircle.setColor(Color.WHITE);
+            mSelectedDayBoxCircle.setColor(mDaySelectedCircleBackgroundColor);
 
             mPreselectedDayBoxCircle = new Paint(Paint.ANTI_ALIAS_FLAG);
             mPreselectedDayBoxCircle.setStyle(Paint.Style.FILL);
-            mPreselectedDayBoxCircle.setColor(Color.rgb(245, 245, 245));
+            mPreselectedDayBoxCircle.setColor(mDayPreselectedCircleBackgroundColor);
 
             mEventBoxFill = new Paint(Paint.ANTI_ALIAS_FLAG);
             mEventBoxFill.setStyle(Paint.Style.FILL);
@@ -327,13 +365,13 @@ public class DonantesCalendarView extends View{
             right = mMonthWidth;
             for (int month = 0; month < 4; month++) {
 
-                canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
-                canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
+                canvas.drawRect(left, top, right, bottom, mEnabledDayBoxFill);
+                canvas.drawRect(left, top, right, bottom, mEnabledDayBoxStroke);
 
                 Rect area=new Rect(mMonthWidth*month, top, mMonthWidth*(month+1), top+mDayHeight/2);
                 String monthName=String.format(Locale.getDefault(), "%tB", cal).substring(0,3).toUpperCase();
-                mMonthText.setTextSize(Math.min(mDayWidth, mDayHeight)/4.2f);
-                drawCenter(canvas, mMonthText, monthName, area);
+                mEnabledDayText.setTextSize(Math.min(mDayWidth, mDayHeight)/4.2f);
+                drawCenter(canvas, mEnabledDayText, monthName, area);
 
                 cal.set(Calendar.DAY_OF_MONTH, 1);
                 int actualMonth=cal.get(Calendar.MONTH);
@@ -349,12 +387,13 @@ public class DonantesCalendarView extends View{
                             int b=top+mDayHeight/2+(mMonthHeight-mDayHeight/2)/6*(week+1);
                             Rect dayArea=new Rect(l, t, r, b);
                             mMonthText.setTextSize(Math.min(mDayWidth, mDayHeight)/6.7f);
-                            mDaysNameText.setTextSize(Math.min(mDayWidth, mDayHeight)/6.7f);
-                            if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY) {
-                                drawCenter(canvas, mDaysNameText, cal.get(Calendar.DAY_OF_MONTH) + "", dayArea);
+                            mEnabledDayText.setTextSize(Math.min(mDayWidth, mDayHeight)/6.7f);
+                            mEnabledDayWeekendText.setTextSize(Math.min(mDayWidth, mDayHeight)/6.7f);
+                            if(mHighlightWeekend&&(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY)) {
+                                drawCenter(canvas, mEnabledDayWeekendText, cal.get(Calendar.DAY_OF_MONTH) + "", dayArea);
                             }
                             else {
-                                drawCenter(canvas, mMonthText, cal.get(Calendar.DAY_OF_MONTH) + "", dayArea);
+                                drawCenter(canvas, mEnabledDayText, cal.get(Calendar.DAY_OF_MONTH) + "", dayArea);
                             }
                             if(mEvents.keySet().contains(cal.getTimeInMillis())){
                                 DonantesCalendarEvent event=mEvents.get(cal.getTimeInMillis());
@@ -432,15 +471,19 @@ public class DonantesCalendarView extends View{
         int radius = Math.min(mDayWidth,mDayHeight) / 2;
         int margin=radius-(int)(radius*.8);
         mEnabledDayText.setTextSize(Math.min(mDayWidth,mDayHeight)/2.8f);
+        mEnabledDayWeekendText.setTextSize(Math.min(mDayWidth,mDayHeight)/2.8f);
+        mEnabledSelectedDayText.setTextSize(Math.min(mDayWidth,mDayHeight)/2.8f);
         mBlankDays=0;
         boolean multiPre=false;
         boolean multiSel=false;
+        boolean selectedDate=false;
         for(int week=0;week<=mWeekCount;week++){
             left=0;
             right=mDayWidth;
             for(int day=0;day<7;day++){
                 if(cal.get(Calendar.MONTH)==mActualMonth) {
                     if (mSelectedDay != -1 && week * 7 + day == mSelectedDay) {
+                        selectedDate=true;
                         mSelectedDate=cal.getTime();
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
@@ -467,23 +510,28 @@ public class DonantesCalendarView extends View{
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mEnabledDayBoxStroke);
                         if (mPreselectedDay != -1 && week * 7 + day == mPreselectedDay) {
+                            selectedDate=true;
                             canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
                         }
                         if (mPreselectedDayMulti1 != -1 && week * 7 + day == mPreselectedDayMulti1) {
+                            selectedDate=true;
                             canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mPreselectedDayBoxCircle);
                             canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
                             multiPre = true;
                         }
                         else if (mPreselectedDayMulti2 != -1 && week * 7 + day == mPreselectedDayMulti2) {
+                            selectedDate=true;
                             canvas.drawRect(left, top+margin, right-mDayWidth/2, bottom-margin, mPreselectedDayBoxCircle);
                             canvas.drawCircle(left + mDayWidth / 2, top + mDayHeight / 2, (int) (radius * .8), mPreselectedDayBoxCircle);
                             multiPre = false;
                         }
                         else if (multiPre) {
+                            selectedDate=true;
                             canvas.drawRect(left, top+margin, right, bottom-margin, mPreselectedDayBoxCircle);
                         }
                     }
                     if(multiSel){
+                        selectedDate=true;
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
                         canvas.drawRect(left, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
@@ -495,6 +543,7 @@ public class DonantesCalendarView extends View{
                         }
                     }
                     if(mSelectedDayMulti1 != -1 && week * 7 + day == mSelectedDayMulti1){
+                        selectedDate=true;
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxFill);
                         canvas.drawRect(left, top, right, bottom, mSelectedDayBoxStroke);
                         canvas.drawRect(left+mDayWidth/2, top+margin, right, bottom-margin, mSelectedDayBoxCircle);
@@ -520,7 +569,18 @@ public class DonantesCalendarView extends View{
                         canvas.drawCircle(left + mDayWidth/2, top + mDayHeight/2, (int) (radius * .8), mSelectedDayBoxCircle);
                         multiSel=false;
                     }
-                    drawCenter(canvas, mEnabledDayText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
+                    if(selectedDate){
+                        drawCenter(canvas, mEnabledSelectedDayText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
+                        selectedDate=false;
+                    }
+                    else {
+                        if(mHighlightWeekend&&(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY)) {
+                            drawCenter(canvas, mEnabledDayWeekendText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
+                        }
+                        else {
+                            drawCenter(canvas, mEnabledDayText, "" + cal.get(Calendar.DAY_OF_MONTH), new Rect(left, top, right, bottom));
+                        }
+                    }
                     if(mEvents.keySet().contains(cal.getTimeInMillis())){
                         DonantesCalendarEvent event=mEvents.get(cal.getTimeInMillis());
                         mEventBoxFill.setColor(event.getEvent().getColor());
@@ -593,7 +653,7 @@ public class DonantesCalendarView extends View{
                                     events.add(getEvent(ci.getTime()));
                                     ranges.add(mEventAssociated.get(ci.getTimeInMillis()));
                                     ci.add(Calendar.DAY_OF_YEAR, 1);
-                                }while(ci.getTimeInMillis()<c2.getTimeInMillis());
+                                }while(ci.getTimeInMillis()<=c2.getTimeInMillis());
                                 mOnSelectedDateChangeListener.OnSelectedDateChange(
                                         c1.getTime(),
                                         c2.getTime(),
@@ -825,6 +885,17 @@ public class DonantesCalendarView extends View{
 
     //GETTERS AND SETTERS
 
+    public int getFirstDayOfWeek(){
+        return mFirstDayOfWeek;
+    }
+
+    public void setFirstDayOfWeek(int firstDayOfWeek){
+        mFirstDayOfWeekReaded=firstDayOfWeek==1?7:firstDayOfWeek-1;
+        init(true);
+        invalidate();
+        requestLayout();
+    }
+
     public void setMultitouch(boolean multitouch){
         multiEnabled = multitouch;
     }
@@ -845,13 +916,28 @@ public class DonantesCalendarView extends View{
         mOnSelectedDateChangeListener = onSelectedDateChangeListener;
     }
 
-    public DonantesCalendarEvent getSelectedEvent(){
+    public List<DonantesCalendarEvent> getSelectedEvent(){
+        List<DonantesCalendarEvent> events = events = new ArrayList<>();;
         if(mSelectedDate!=null) {
-            return mEvents.get(mSelectedDate.getTime());
+            if(mEvents.containsKey(mSelectedDate.getTime())){
+                events.add(mEvents.get(mSelectedDate.getTime()));
+            }
         }
-        else{
-            return null;
+        else if(mSelectedDayMulti1!=-1 && mSelectedDayMulti2!=-1) {
+            Calendar c1 = (Calendar) cal.clone();
+            c1.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti1 - mBlankDays + 1);
+            Calendar ci = (Calendar) cal.clone();
+            ci.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti1 - mBlankDays + 1);
+            Calendar c2 = (Calendar) cal.clone();
+            c2.set(Calendar.DAY_OF_MONTH, mSelectedDayMulti2 - mBlankDays + 1);
+            do{
+                if(getEvent(ci.getTime())!=null) {
+                    events.add(getEvent(ci.getTime()));
+                }
+                ci.add(Calendar.DAY_OF_YEAR, 1);
+            }while(ci.getTimeInMillis()<=c2.getTimeInMillis());
         }
+        return events;
     }
 
     public DonantesCalendarEvent getEvent(Date date){
@@ -937,6 +1023,89 @@ public class DonantesCalendarView extends View{
             }
             initEventsAssociated();
         }
+    }
+
+    @Override
+    public void setBackgroundColor(int backgroundColor) {
+        mBackgroundColor = backgroundColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setMonthTextColor(int monthTextColor) {
+        mMonthTextColor = monthTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setMonthSelectedTextColor(int monthSelectedTextColor) {
+        mMonthSelectedTextColor = monthSelectedTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayNameTextColor(int dayNameTextColor) {
+        mDayNameTextColor = dayNameTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayBoxBackgroundColor(int dayBoxBackgroundColor) {
+        mDayBoxBackgroundColor = dayBoxBackgroundColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayTextColor(int dayTextColor) {
+        mDayTextColor = dayTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayWeekendTextColor(int dayWeekendTextColor) {
+        mDayWeekendTextColor = dayWeekendTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayBoxBorderColor(int dayBoxBorderColor) {
+        mDayBoxBorderColor = dayBoxBorderColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDaySelectedBoxBackgroundColor(int daySelectedBoxBackgroundColor) {
+        mDaySelectedBoxBackgroundColor = daySelectedBoxBackgroundColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDaySelectedCircleBackgroundColor(int daySelectedCircleBackgroundColor) {
+        mDaySelectedCircleBackgroundColor = daySelectedCircleBackgroundColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDayPreselectedCircleBackgroundColor(int dayPreselectedCircleBackgroundColor) {
+        mDayPreselectedCircleBackgroundColor = dayPreselectedCircleBackgroundColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setDaySelectedTextColor(int daySelectedTextColor) {
+        mDaySelectedTextColor = daySelectedTextColor;
+        init(true);
+        invalidate();
+    }
+
+    public void setHighlightWeekend(boolean highlightWeekend) {
+        mHighlightWeekend = highlightWeekend;
+        init(true);
+        invalidate();
+    }
+
+    public boolean isHighlightWeekend(){
+        return mHighlightWeekend;
     }
 
     public interface OnSelectedDateChangeListener{

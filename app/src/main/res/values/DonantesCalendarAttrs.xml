@@ -21,5 +21,18 @@
             <enum name="sunday" value="7" />
         </attr>
         <attr name="multitouch" format="boolean" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="monthTextColor" format="color" />
+        <attr name="monthSelectedTextColor" format="color" />
+        <attr name="dayNameTextColor" format="color" />
+        <attr name="dayBoxBackgroundColor" format="color" />
+        <attr name="dayTextColor" format="color" />
+        <attr name="dayWeekendTextColor" format="color" />
+        <attr name="dayBoxBorderColor" format="color" />
+        <attr name="daySelectedBoxBackgroundColor" format="color" />
+        <attr name="daySelectedCircleBackgroundColor" format="color" />
+        <attr name="dayPreselectedCircleBackgroundColor" format="color" />
+        <attr name="daySelectedTextColor" format="color" />
+        <attr name="highlightWeekend" format="boolean" />
     </declare-styleable>
 </resources>

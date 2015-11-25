@@ -60,4 +60,32 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Spinner
+        android:id="@+id/firstDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dialog"
+        android:entries="@array/weekdays"
+        android:layout_below="@+id/multi"
+        android:layout_alignParentLeft="true" />
+
+    <Spinner
+        android:id="@+id/theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/firstDay"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:spinnerMode="dialog"
+        android:entries="@array/theme"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weekends"
+        android:id="@+id/weekends"
+        android:layout_alignTop="@+id/multi"
+        android:layout_alignLeft="@+id/toggleMonthName"
+        android:layout_alignStart="@+id/toggleMonthName" />
+
 </RelativeLayout>
